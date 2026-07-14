@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VitalGear AI</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* 確保字體加載 */
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap');
+    
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+    }
+
+    /* 背景動畫效果 */
+    @keyframes blob {
+      0% { transform: translate(0px, 0px) scale(1); }
+      33% { transform: translate(30px, -50px) scale(1.1); }
+      66% { transform: translate(-20px, 20px) scale(0.9); }
+      100% { transform: translate(0px, 0px) scale(1); }
+    }
+    .animate-blob {
+      animation: blob 7s infinite;
+    }
+    .animation-delay-2000 {
+      animation-delay: 2s;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-800 selection:bg-teal-200">
+  
+  <div id="app"></div>
+
+  <script>
+    // --- 多語系文本字典 ---
+    const content = {
+      zh: {
+        nav: { brand: 'VitalGear AI', survey: '填寫問卷' },
+        hero: {
+          title: 'VitalGear AI 智慧生理感測系統',
+          subtitle: '透過鏡頭，快速掌握即時生理狀態',
+          desc: '透過裝置鏡頭，在約 30 秒內完成多項生理狀態分析，提供快速、非接觸且直覺化的智慧健康檢測體驗。',
+          cta: '了解更多'
+        },
+        intro: {
+          title: '產品介紹',
+          text: 'VitalGear AI 是一套結合 AI 影像分析與智慧生理感測技術的健康監測系統。使用者只需要開啟手機、平板或電腦鏡頭，依照畫面提示完成臉部辨識與簡單動作，即可在約 30 秒內完成生理狀態分析，快速取得多項健康參考數據。整體操作不需穿戴裝置，能降低傳統量測設備的使用門檻，適合導入健康管理、遠距照護、智慧醫療、企業健康與互動展示等應用情境。'
+        },
+        features: {
+          title: '核心特色',
+          items: [
+            { icon: 'scan-face', title: '非接觸式量測', text: '透過裝置鏡頭進行影像偵測，不需配戴手環、胸帶或其他穿戴裝置，即可快速完成生理數據分析。' },
+            { icon: 'clock', title: '約 30 秒快速檢測', text: '使用者依照畫面提示完成臉部定位與左右轉頭等動作，系統即可進行即時分析，縮短健康檢測流程。' },
+            { icon: 'activity', title: '多項生理指標整合', text: '涵蓋心率、血氧、血壓、呼吸率、HRV、壓力、疲勞等指標，透過單一介面快速掌握多項生理狀態。' },
+            { icon: 'check-circle-2', title: '即時視覺化呈現', text: '量測完成後，系統以數值、狀態與趨勢圖方式呈現結果，協助使用者更直覺地了解目前身體狀況。' }
+          ]
+        },
+        indicators: {
+          title: '系統介面可呈現指標',
+          list: ['心率 BPM', '血氧飽和度', '血壓', '呼吸率', 'HRV 心率變異度', '壓力指數', '疲勞程度', '身體水分狀態', '健康分數', 'ECG 趨勢顯示', '即時生理趨勢圖']
+        },
+        flow: {
+          title: '使用流程',
+          steps: [
+            { title: '開啟相機', text: '使用者授權系統使用裝置鏡頭，並將臉部置於畫面指定範圍內。', icon: 'camera' },
+            { title: '完成動作辨識', text: '依照畫面指示進行左右轉頭等動作，協助系統確認臉部位置與量測條件。', icon: 'scan-face' },
+            { title: '開始測量', text: '保持臉部穩定並等待約 30 秒，系統將進行即時生理訊號分析。', icon: 'clock' },
+            { title: '查看分析結果', text: '完成後即可查看心率、血氧、呼吸率、壓力、疲勞程度、HRV 與健康分數等參考數據。', icon: 'file-text' }
+          ]
+        },
+        comparison: {
+          title: '產品優勢對比',
+          headers: ['比較項目', '傳統量測方式', 'VitalGear AI'],
+          rows: [
+            ['指標整合', '需要使用多種量測設備', '單一介面整合多項指標'],
+            ['量測方式', '需要接觸或穿戴裝置', '透過鏡頭進行非接觸式分析'],
+            ['時間與流程', '量測流程較為繁瑣', '約 30 秒快速完成'],
+            ['數據呈現', '數據分散於不同設備', '集中呈現數值與趨勢'],
+            ['使用限制', '使用地點受到設備限制', '可透過手機、平板或電腦操作']
+          ]
+        },
+        value: {
+          title: '產品價值',
+          items: [
+            { title: '降低健康量測門檻', text: '不需額外穿戴設備，只要使用具有鏡頭的裝置，即可進行快速健康檢測。' },
+            { title: '提升服務效率', text: '可將多項生理指標整合於單一操作流程，減少使用不同設備逐一量測的時間。' },
+            { title: '強化健康管理體驗', text: '透過視覺化數據與健康分數，讓使用者更容易理解自身生理狀態，建立持續健康管理的習慣。' },
+            { title: '支援系統整合', text: '可應用於健康管理平台、企業員工系統、遠距照護服務、健康檢測站及智慧裝置服務。' }
+          ]
+        },
+        scenarios: {
+          title: '適用情境',
+          items: [
+            { icon: 'heart-pulse', title: '健康管理中心', text: '提供會員快速量測與健康狀態追蹤，提升健康諮詢與管理服務效率。' },
+            { icon: 'shield-check', title: '醫療及照護機構', text: '可作為初步健康狀態觀察與遠距照護輔助工具，協助掌握生理變化。' },
+            { icon: 'users', title: '企業員工健康管理', text: '整合至企業健康平台，提供員工簡單、快速且低門檻的日常健康檢測。' },
+            { icon: 'activity', title: '長照與銀髮照護', text: '透過簡化的操作流程，協助照護機構定期觀察長者的生理狀態與變化趨勢。' },
+            { icon: 'smartphone', title: '健身與運動場域', text: '可於運動前後進行生理狀態比較，協助使用者了解疲勞、心率與壓力變化。' }
+          ]
+        },
+        positioning: {
+          title: '產品定位',
+          text: 'VitalGear AI 不只是單一生理數據量測工具，而是一個可延伸至多元健康服務的 AI 生理感測入口。透過快速、非接觸及視覺化的操作方式，協助企業與機構建立更方便、更即時的健康管理服務，讓健康檢測不再受到設備與場域限制。'
+        },
+        survey: {
+          title: '體驗與回饋',
+          text: '掃描下方 QR Code 或點擊按鈕填寫問卷，分享您的使用體驗或獲取更多產品資訊！',
+          button: '立即填寫問卷',
+          url: 'https://docs.google.com/forms/d/e/1FAIpQLSdTlxsYAq1cI9n2mJAUieW2AWUSzL_Q2ImjH-fSMZTJacIYqA/viewform'
+        },
+        disclaimer: {
+          title: '注意事項',
+          text: '本系統所提供的生理數據與分析結果，應定位為健康管理及狀態觀察的參考資訊。實際應用時，仍需依照產品驗證、設備規格與相關法規，明確標示適用範圍。系統不應直接取代醫療級血壓計、血氧機、心電圖設備或專業醫師診斷；如使用者有身體不適或數據異常，仍應尋求專業醫療協助。'
+        }
+      },
+      en: {
+        nav: { brand: 'VitalGear AI', survey: 'Survey' },
+        hero: {
+          title: 'VitalGear AI Smart Sensing',
+          subtitle: 'Master real-time physiological status through your camera',
+          desc: 'Complete multiple physiological state analyses in about 30 seconds via your device\'s camera, providing a fast, contactless, and intuitive smart health check experience.',
+          cta: 'Learn More'
+        },
+        intro: {
+          title: 'Product Introduction',
+          text: 'VitalGear AI is a health monitoring system combining AI image analysis and smart physiological sensing. Users simply open their device camera and follow on-screen prompts for facial recognition and simple movements to complete a physiological analysis in about 30 seconds. Without needing wearables, it lowers the barrier to health measurement, ideal for health management, remote care, smart healthcare, corporate wellness, and interactive displays.'
+        },
+        features: {
+          title: 'Core Features',
+          items: [
+            { icon: 'scan-face', title: 'Contactless Measurement', text: 'Analyzes physiological data quickly through device cameras without the need for wristbands, chest straps, or other wearables.' },
+            { icon: 'clock', title: '30-Second Fast Check', text: 'Real-time analysis is performed as users complete simple facial positioning and head-turning prompts, shortening the checkup process.' },
+            { icon: 'activity', title: 'Multiple Indicators', text: 'Covers HR, SpO2, BP, respiration, HRV, stress, and fatigue, letting users grasp multiple stats via a single interface.' },
+            { icon: 'check-circle-2', title: 'Real-time Visualization', text: 'Presents results with numerical values, statuses, and trend graphs, helping users intuitively understand their physical condition.' }
+          ]
+        },
+        indicators: {
+          title: 'Supported Indicators',
+          list: ['Heart Rate (BPM)', 'SpO2', 'Blood Pressure', 'Respiration Rate', 'HRV', 'Stress Index', 'Fatigue Level', 'Body Hydration', 'Health Score', 'ECG Trend', 'Real-time Trend Graph']
+        },
+        flow: {
+          title: 'How It Works',
+          steps: [
+            { title: 'Open Camera', text: 'Grant camera access and position your face within the designated frame.', icon: 'camera' },
+            { title: 'Motion Recognition', text: 'Follow on-screen instructions (e.g., turning head) to confirm facial positioning.', icon: 'scan-face' },
+            { title: 'Start Measurement', text: 'Keep your face steady for about 30 seconds while the system analyzes physiological signals.', icon: 'clock' },
+            { title: 'View Results', text: 'Instantly view HR, SpO2, respiration, stress, fatigue, HRV, and health score data.', icon: 'file-text' }
+          ]
+        },
+        comparison: {
+          title: 'Competitive Advantage',
+          headers: ['Feature', 'Traditional Methods', 'VitalGear AI'],
+          rows: [
+            ['Integration', 'Requires multiple measurement devices', 'Integrates multiple indicators in one UI'],
+            ['Method', 'Requires physical contact or wearables', 'Contactless analysis via camera'],
+            ['Time & Process', 'Cumbersome measurement process', 'Completed rapidly in approx. 30s'],
+            ['Data Display', 'Data scattered across different devices', 'Centralized numerical and trend display'],
+            ['Limitations', 'Location restricted by equipment', 'Operates on phones, tablets, or PCs']
+          ]
+        },
+        value: {
+          title: 'Product Value',
+          items: [
+            { title: 'Lower Threshold', text: 'No extra wearables needed; perform rapid health checks simply using a camera-equipped device.' },
+            { title: 'Enhance Efficiency', text: 'Integrates multiple indicators into a single process, reducing time spent using various devices.' },
+            { title: 'Better Experience', text: 'Visualized data and health scores help users understand their status and build management habits.' },
+            { title: 'System Integration', text: 'Easily applicable to health platforms, corporate systems, remote care, and smart device services.' }
+          ]
+        },
+        scenarios: {
+          title: 'Application Scenarios',
+          items: [
+            { icon: 'heart-pulse', title: 'Health Centers', text: 'Provides members with rapid measurement and tracking, improving consultation efficiency.' },
+            { icon: 'shield-check', title: 'Medical Institutions', text: 'Serves as an initial observation and remote care tool to help monitor physiological changes.' },
+            { icon: 'users', title: 'Corporate Wellness', text: 'Integrates into corporate platforms for simple, fast, low-barrier daily health checks for employees.' },
+            { icon: 'activity', title: 'Elderly Care', text: 'Simplified processes help care institutions regularly observe seniors\' physiological trends.' },
+            { icon: 'smartphone', title: 'Fitness & Sports', text: 'Compare states before/after exercise to understand fatigue, heart rate, and stress changes.' }
+          ]
+        },
+        positioning: {
+          title: 'Product Positioning',
+          text: 'VitalGear AI is more than a single measurement tool; it is an AI physiological sensing gateway for diverse health services. Through fast, contactless, visual operations, it helps organizations build accessible, real-time health management services free from equipment limitations.'
+        },
+        survey: {
+          title: 'Experience & Feedback',
+          text: 'Scan the QR Code below or click the button to fill out our survey, share your experience, or get more info!',
+          button: 'Fill out Survey',
+          url: 'https://docs.google.com/forms/d/e/1FAIpQLSdTlxsYAq1cI9n2mJAUieW2AWUSzL_Q2ImjH-fSMZTJacIYqA/viewform'
+        },
+        disclaimer: {
+          title: 'Disclaimer',
+          text: 'Data and analysis provided by this system are for health management reference only. Actual use must comply with product validations and regulations. The system does not replace medical-grade BP monitors, oximeters, ECGs, or professional diagnosis. Seek medical help for discomfort or abnormal data.'
+        }
+      },
+      ja: {
+        nav: { brand: 'VitalGear AI', survey: 'アンケート' },
+        hero: {
+          title: 'VitalGear AI スマートセンシング',
+          subtitle: 'カメラを通じて、リアルタイムの生理状態をすばやく把握',
+          desc: 'デバイスのカメラを通じて、約30秒で複数の生理状態分析を完了し、迅速かつ非接触で直感的なスマート健康チェック体験を提供します。',
+          cta: '詳細を見る'
+        },
+        intro: {
+          title: '製品紹介',
+          text: 'VitalGear AI は、AI画像分析とスマート生理センシング技術を組み合わせた健康モニタリングシステムです。スマホ、タブレット、PCのカメラを起動し、画面の指示に従って顔認識や簡単な動作を行うだけで、約30秒で生理状態の分析が完了します。ウェアラブルデバイスは不要で、健康管理、遠隔医療、企業の健康管理などのシーンに最適です。'
+        },
+        features: {
+          title: 'コア機能',
+          items: [
+            { icon: 'scan-face', title: '非接触測定', text: 'カメラによる画像検出を通じて、スマートウォッチや胸部ストラップなしで迅速にデータを分析します。' },
+            { icon: 'clock', title: '約30秒の高速検出', text: '画面の指示に従って顔の位置合わせや首振りを行うだけで、システムがリアルタイムで分析を行います。' },
+            { icon: 'activity', title: '複数指標の統合', text: '心拍数、血中酸素、血圧、呼吸数、HRV、ストレスなどの指標を一つの画面で確認できます。' },
+            { icon: 'check-circle-2', title: 'リアルタイムの視覚化', text: '測定完了後、数値、状態、トレンドグラフとして結果を表示し、直感的な理解をサポートします。' }
+          ]
+        },
+        indicators: {
+          title: '測定可能な指標',
+          list: ['心拍数 (BPM)', '血中酸素飽ニュ度', '血圧', '呼吸数', 'HRV (心拍変動)', 'ストレス指数', '疲労度', '体水分状態', '健康スコア', 'ECGトレンド表示', 'リアルタイムトレンドグラフ']
+        },
+        flow: {
+          title: '利用手順',
+          steps: [
+            { title: 'カメラの起動', text: 'システムのカメラアクセスを許可し、指定された枠内に顔を合わせます。', icon: 'camera' },
+            { title: '動作認識', text: '画面の指示に従って首を左右に振るなどの動作を行い、顔の位置を確認します。', icon: 'scan-face' },
+            { title: '測定開始', text: '顔を安定させたまま約30秒待機し、システムが生理信号を分析します。', icon: 'clock' },
+            { title: '結果の確認', text: '心拍数、血中酸素、呼吸数、ストレス、疲労度、HRVなどのデータを確認します。', icon: 'file-text' }
+          ]
+        },
+        comparison: {
+          title: '製品の優位性',
+          headers: ['比較項目', '従来の測定方法', 'VitalGear AI'],
+          rows: [
+            ['指標の統合', '複数の測定機器が必要', '単一のインターフェースに統合'],
+            ['測定方法', '接触やウェアラブルデバイスが必要', 'カメラを通じた非接触分析'],
+            ['時間と手順', '測定手順が煩雑', '約30秒で迅速に完了'],
+            ['データ表示', 'データが別々の機器に分散', '数値とトレンドを集中表示'],
+            ['利用制限', '機器により利用場所が制限される', 'スマホ、タブレット、PCで操作可能']
+          ]
+        },
+        value: {
+          title: '製品の価値',
+          items: [
+            { title: '測定のハードルを下げる', text: '追加の機器は不要で、カメラ付きデバイスがあればすぐに健康チェックが可能です。' },
+            { title: 'サービス効率の向上', text: '複数の指標を一度の操作で測定できるため、機器ごとの測定時間を削減します。' },
+            { title: '健康管理体験の強化', text: '視覚化されたデータにより、自身の状態を理解しやすく、健康管理の習慣化を促進します。' },
+            { title: 'システム統合のサポート', text: '健康管理プラットフォーム、企業の従業員システム、遠隔ケアサービスに容易に組み込めます。' }
+          ]
+        },
+        scenarios: {
+          title: '適用シナリオ',
+          items: [
+            { icon: 'heart-pulse', title: '健康管理センター', text: '会員に迅速な測定と追跡を提供し、健康相談と管理サービスの効率を向上させます。' },
+            { icon: 'shield-check', title: '医療および介護施設', text: '初期の健康状態観察や遠隔ケアの補助ツールとして、生理的変化の把握を支援します。' },
+            { icon: 'users', title: '企業の従業員健康管理', text: '企業のプラットフォームに統合し、従業員に簡単で迅速な日常の健康チェックを提供します。' },
+            { icon: 'activity', title: '高齢者ケア', text: '簡素化された操作手順により、介護施設が高齢者の生理的状態を定期的に観察するのを支援します。' },
+            { icon: 'smartphone', title: 'フィットネス・スポーツ', text: '運動前後の生理状態を比較し、疲労、心拍数、ストレスの変化を把握できます。' }
+          ]
+        },
+        positioning: {
+          title: '製品のポジショニング',
+          text: 'VitalGear AIは単なる測定ツールではなく、多様な健康サービスに拡張可能なAI生理センシングの入り口です。迅速、非接触、視覚的な操作により、設備や場所の制限を受けない健康管理サービスの構築を支援します。'
+        },
+        survey: {
+          title: '体験とフィードバック',
+          text: '以下のQRコードをスキャンするか、ボタンをクリックしてアンケートに回答し、より多くの情報を取得してください！',
+          button: 'アンケートに回答する',
+          url: 'https://docs.google.com/forms/d/e/1FAIpQLSdTlxsYAq1cI9n2mJAUieW2AWUSzL_Q2ImjH-fSMZTJacIYqA/viewform'
+        },
+        disclaimer: {
+          title: '注意事項',
+          text: '本システムが提供するデータおよび分析結果は、健康管理および状態観察の参考情報として位置づけられます。実際の運用には、製品検証や規制に従う必要があります。本システムは医療用の血圧計、血中酸素計、心電図、または専門医の診断を直接代替するものではありません。異常がある場合は専門医にご相談ください。'
+        }
+      }
+    };
+
+    // 狀態變數：預設為 'ja' (日語)
+    let lang = 'ja';
+    let activeStep = 0;
+
+    // 切換語系
+    function setLang(newLang) {
+      lang = newLang;
+      // 同步更新 HTML 標籤語系
+      document.documentElement.lang = lang === 'zh' ? 'zh-Hant' : lang;
+      render();
+    }
+
+    // 渲染函數
+    function render() {
+      const t = content[lang];
+      const app = document.getElementById('app');
+
+      app.innerHTML = `
+        <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2 text-teal-600">
+              <i data-lucide="camera" class="w-7 h-7"></i>
+              <span class="font-bold text-xl tracking-tight">${t.nav.brand}</span>
+            </div>
+            <div class="flex items-center gap-4">
+              <div class="flex bg-slate-100 p-1 rounded-lg">
+                ${['ja', 'zh', 'en'].map(l => `
+                  <button onclick="setLang('${l}')" class="px-3 py-1 text-sm rounded-md transition-colors ${
+                    lang === l ? 'bg-white shadow-sm font-medium text-teal-700' : 'text-slate-500 hover:text-slate-700'
+                  }">
+                    ${l === 'zh' ? '繁中' : l === 'en' ? 'EN' : '日本語'}
+                  </button>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        </nav>
+
+        <section class="relative overflow-hidden bg-slate-900 text-white py-20 sm:py-32">
+          <div class="absolute inset-0 bg-gradient-to-br from-teal-900 to-slate-900 opacity-90"></div>
+          <div class="absolute -top-24 -right-24 w-96 h-96 bg-teal-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+          <div class="absolute top-24 -left-24 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+          
+          <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/20 text-teal-300 text-sm font-medium mb-6">
+              <i data-lucide="globe" class="w-4 h-4"></i> AI Smart Sensing
+            </div>
+            <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight mb-6">
+              ${t.hero.title}
+            </h1>
+            <p class="text-xl sm:text-2xl text-teal-100 mb-8 max-w-3xl font-light">
+              ${t.hero.subtitle}
+            </p>
+            <p class="text-slate-300 max-w-2xl mx-auto mb-10 text-lg leading-relaxed">
+              ${t.hero.desc}
+            </p>
+            <div class="flex gap-4">
+              <a href="#intro" class="bg-teal-500 hover:bg-teal-400 text-white px-8 py-3 rounded-full font-medium transition-all shadow-lg hover:shadow-teal-500/30 flex items-center gap-2">
+                ${t.hero.cta} <i data-lucide="arrow-right" class="w-5 h-5"></i>
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <section id="intro" class="py-20 bg-white">
+          <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">${t.intro.title}</h2>
+            <div class="w-16 h-1 bg-teal-500 mx-auto rounded mb-8"></div>
+            <p class="text-lg text-slate-600 leading-relaxed text-justify sm:text-center">
+              ${t.intro.text}
+            </p>
+          </div>
+        </section>
+
+        <section class="py-20 bg-slate-50">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+              <h2 class="text-3xl font-bold text-slate-900 mb-4">${t.features.title}</h2>
+              <div class="w-16 h-1 bg-teal-500 mx-auto rounded"></div>
+            </div>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              ${t.features.items.map(item => `
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+                  <div class="w-12 h-12 bg-teal-50 text-teal-600 rounded-xl flex items-center justify-center mb-6">
+                    <i data-lucide="${item.icon}" class="w-6 h-6"></i>
+                  </div>
+                  <h3 class="text-xl font-bold mb-3">${item.title}</h3>
+                  <p class="text-slate-600 leading-relaxed">${item.text}</p>
+                </div>
+              `).join('')}
+            </div>
+
+            <div class="mt-16 bg-white p-8 rounded-2xl shadow-sm border border-slate-100 text-center">
+              <h3 class="text-lg font-semibold mb-6 text-slate-800">${t.indicators.title}</h3>
+              <div class="flex flex-wrap justify-center gap-3">
+                ${t.indicators.list.map(ind => `
+                  <span class="px-4 py-2 bg-slate-100 text-slate-700 rounded-full text-sm font-medium">
+                    ${ind}
+                  </span>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="py-20 bg-white">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+              <h2 class="text-3xl font-bold text-slate-900 mb-4">${t.flow.title}</h2>
+              <div class="w-16 h-1 bg-teal-500 mx-auto rounded"></div>
+            </div>
+            
+            <div class="relative max-w-5xl mx-auto">
+              <div class="hidden lg:block absolute top-24 left-[10%] right-[10%] h-1 bg-slate-100 -z-10 rounded-full"></div>
+              
+              <div class="flex flex-col lg:flex-row justify-between gap-8 lg:gap-4 relative z-10">
+                ${t.flow.steps.map((step, idx) => `
+                  <div class="flow-step-container flex-1 relative transition-all duration-300 cursor-pointer group" data-idx="${idx}">
+                    ${idx !== t.flow.steps.length - 1 ? `<div class="lg:hidden absolute left-[31px] top-16 bottom-[-2rem] w-0.5 bg-slate-100 -z-10"></div>` : ''}
+
+                    <div class="flex flex-row lg:flex-col items-start lg:items-center gap-4 lg:gap-6 bg-white p-4 lg:p-6 rounded-2xl border border-transparent lg:hover:border-teal-100 lg:hover:shadow-lg transition-all">
+                      <div class="step-icon-circle w-16 h-16 shrink-0 rounded-full flex items-center justify-center transition-colors duration-300 shadow-sm">
+                        <i data-lucide="${step.icon}" class="w-7 h-7"></i>
+                      </div>
+                      
+                      <div class="step-num hidden lg:flex w-8 h-8 rounded-full items-center justify-center text-sm font-bold absolute top-[80px] border-4 border-white transition-colors duration-300">
+                        ${idx + 1}
+                      </div>
+
+                      <div class="flex-1 lg:text-center mt-1 lg:mt-6">
+                        <div class="flex items-center gap-2 lg:justify-center mb-2">
+                          <span class="lg:hidden text-sm font-bold text-teal-600 bg-teal-50 px-2 py-0.5 rounded">Step ${idx + 1}</span>
+                          <h3 class="step-title text-xl font-bold transition-colors">
+                            ${step.title}
+                          </h3>
+                        </div>
+                        <p class="text-slate-600 text-sm leading-relaxed">${step.text}</p>
+                      </div>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="py-20 bg-slate-900 text-white">
+          <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+              <h2 class="text-3xl font-bold mb-4">${t.comparison.title}</h2>
+              <div class="w-16 h-1 bg-teal-500 mx-auto rounded"></div>
+            </div>
+            <div class="overflow-x-auto rounded-xl border border-slate-700 bg-slate-800 shadow-xl">
+              <table class="w-full text-left border-collapse min-w-[600px]">
+                <thead>
+                  <tr class="bg-slate-700/80">
+                    <th class="p-5 sm:p-6 font-semibold border-b border-slate-600 w-1/3">${t.comparison.headers[0]}</th>
+                    <th class="p-5 sm:p-6 font-semibold border-b border-slate-600 text-slate-400 w-1/3">${t.comparison.headers[1]}</th>
+                    <th class="p-5 sm:p-6 font-semibold border-b border-slate-600 text-teal-400 w-1/3 bg-slate-700/40">${t.comparison.headers[2]}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${t.comparison.rows.map(row => `
+                    <tr class="hover:bg-slate-700/50 transition-colors group">
+                      <td class="p-5 sm:p-6 border-b border-slate-700/50 font-medium">${row[0]}</td>
+                      <td class="p-5 sm:p-6 border-b border-slate-700/50 text-slate-400">${row[1]}</td>
+                      <td class="p-5 sm:p-6 border-b border-slate-700/50 text-teal-300 font-medium bg-slate-700/20 group-hover:bg-slate-700/40 flex items-start sm:items-center gap-3">
+                        <i data-lucide="check-circle-2" class="w-5 h-5 shrink-0 text-teal-500 mt-0.5 sm:mt-0"></i> ${row[2]}
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="py-20 bg-slate-50">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+              <h2 class="text-3xl font-bold text-slate-900 mb-4">${t.value.title}</h2>
+              <div class="w-16 h-1 bg-teal-500 mx-auto rounded"></div>
+            </div>
+            <div class="grid sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
+              ${t.value.items.map(item => `
+                <div class="flex gap-4 p-6 bg-white rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+                  <div class="flex-shrink-0 mt-1">
+                    <div class="w-8 h-8 rounded-full bg-teal-100 text-teal-600 flex items-center justify-center">
+                      <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+                    </div>
+                  </div>
+                  <div>
+                    <h3 class="font-bold text-lg mb-2">${item.title}</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed">${item.text}</p>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </section>
+
+        <section class="py-20 bg-white">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+              <h2 class="text-3xl font-bold text-slate-900 mb-4">${t.scenarios.title}</h2>
+              <div class="w-16 h-1 bg-teal-500 mx-auto rounded"></div>
+            </div>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              ${t.scenarios.items.map(item => `
+                <div class="group p-8 rounded-2xl bg-slate-50 hover:bg-teal-600 transition-colors duration-300 shadow-sm">
+                  <i data-lucide="${item.icon}" class="w-10 h-10 text-teal-500 group-hover:text-teal-200 mb-6 transition-colors"></i>
+                  <h3 class="text-xl font-bold mb-3 text-slate-900 group-hover:text-white transition-colors">${item.title}</h3>
+                  <p class="text-slate-600 group-hover:text-teal-50 transition-colors leading-relaxed">
+                    ${item.text}
+                  </p>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </section>
+
+        <section class="py-20 bg-teal-50 border-y border-teal-100">
+          <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <i data-lucide="file-text" class="w-12 h-12 text-teal-600 mx-auto mb-6"></i>
+            <h2 class="text-2xl font-bold text-slate-900 mb-6">${t.positioning.title}</h2>
+            <p class="text-lg text-teal-900/80 leading-relaxed">
+              ${t.positioning.text}
+            </p>
+          </div>
+        </section>
+
+        <section id="survey" class="py-24 bg-white relative overflow-hidden">
+          <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <div class="bg-slate-900 rounded-3xl p-8 sm:p-12 shadow-2xl text-white overflow-hidden relative">
+               <div class="absolute top-0 right-0 w-64 h-64 bg-teal-500/20 rounded-full mix-blend-screen filter blur-3xl"></div>
+               
+               <i data-lucide="qr-code" class="w-16 h-16 text-teal-400 mx-auto mb-6"></i>
+               <h2 class="text-3xl font-bold mb-4">${t.survey.title}</h2>
+               <p class="text-slate-300 mb-8 max-w-lg mx-auto">
+                 ${t.survey.text}
+               </p>
+               
+               <div class="flex flex-col items-center justify-center gap-8">
+                 <div class="bg-white p-4 rounded-xl shadow-lg inline-block">
+                   <img 
+                      src="https://drive.google.com/thumbnail?id=10igCVoViNUdjWlIQvpJWkLnx7YVehLz6" 
+                      alt="Survey QR Code"
+                      class="w-36 h-36 object-contain"
+                      style="image-rendering: crisp-edges;"
+                   />
+                 </div>
+                 
+                 <button
+                   type="button"
+                   onclick="window.open('${t.survey.url}', '_blank', 'noopener,noreferrer')"
+                   class="bg-teal-500 hover:bg-teal-400 text-white px-8 py-3 rounded-full font-medium transition-all w-full sm:w-auto shadow-lg hover:shadow-teal-500/50"
+                 >
+                   ${t.survey.button}
+                 </button>
+               </div>
+            </div>
+          </div>
+        </section>
+
+        <footer class="bg-slate-900 border-t border-slate-800 text-slate-400 py-12">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mb-8 flex items-center gap-2 text-teal-500">
+              <i data-lucide="camera" class="w-6 h-6"></i>
+              <span class="font-bold text-lg">${t.nav.brand}</span>
+            </div>
+            <div class="bg-slate-800/50 p-6 rounded-xl border border-slate-700/50">
+              <h4 class="text-slate-300 font-semibold mb-2 flex items-center gap-2">
+                <i data-lucide="shield-check" class="w-4 h-4"></i> ${t.disclaimer.title}
+              </h4>
+              <p class="text-sm leading-relaxed text-justify sm:text-left">
+                ${t.disclaimer.text}
+              </p>
+            </div>
+            <div class="mt-8 text-sm text-center sm:text-left">
+              &copy; ${new Date().getFullYear()} VitalGear AI. All rights reserved.
+            </div>
+          </div>
+        </footer>
+      `;
+
+      // 重新生成 Icons
+      lucide.createIcons();
+
+      // 重新綁定動畫與事件
+      bindFlowEvents();
+    }
+
+    // 處理使用流程 (Flow) 的 hover 動畫邏輯
+    function updateFlowStepsUI() {
+      document.querySelectorAll('.flow-step-container').forEach((el) => {
+        const idx = parseInt(el.getAttribute('data-idx'));
+        const iconCircle = el.querySelector('.step-icon-circle');
+        const stepNum = el.querySelector('.step-num');
+        const title = el.querySelector('.step-title');
+
+        if (idx === activeStep) {
+          el.classList.add('scale-105');
+          el.classList.remove('opacity-80');
+          
+          iconCircle.classList.add('bg-teal-600', 'text-white', 'shadow-teal-200', 'shadow-lg');
+          iconCircle.classList.remove('bg-slate-50', 'text-teal-600', 'border', 'border-slate-200', 'group-hover:border-teal-300');
+          
+          if(stepNum) {
+            stepNum.classList.add('bg-teal-500', 'text-white');
+            stepNum.classList.remove('bg-slate-200', 'text-slate-500');
+          }
+          
+          title.classList.add('text-teal-700');
+          title.classList.remove('text-slate-800');
+        } else {
+          el.classList.remove('scale-105');
+          el.classList.add('opacity-80');
+          
+          iconCircle.classList.remove('bg-teal-600', 'text-white', 'shadow-teal-200', 'shadow-lg');
+          iconCircle.classList.add('bg-slate-50', 'text-teal-600', 'border', 'border-slate-200', 'group-hover:border-teal-300');
+          
+          if(stepNum) {
+            stepNum.classList.remove('bg-teal-500', 'text-white');
+            stepNum.classList.add('bg-slate-200', 'text-slate-500');
+          }
+          
+          title.classList.remove('text-teal-700');
+          title.classList.add('text-slate-800');
+        }
+      });
+    }
+
+    function bindFlowEvents() {
+      document.querySelectorAll('.flow-step-container').forEach((el) => {
+        el.addEventListener('mouseenter', () => {
+          activeStep = parseInt(el.getAttribute('data-idx'));
+          updateFlowStepsUI();
+        });
+      });
+      // 初始化第一次狀態
+      updateFlowStepsUI();
+    }
+
+    // 初始化應用
+    render();
+  </script>
+</body>
+</html>

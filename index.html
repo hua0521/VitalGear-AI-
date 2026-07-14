@@ -530,7 +530,11 @@
                    />
                  </div>
                  
-                 <button class="bg-teal-500 hover:bg-teal-400 text-white px-8 py-3 rounded-full font-medium transition-all w-full sm:w-auto shadow-lg hover:shadow-teal-500/50">
+                 <button
+                   type="button"
+                   onclick="window.open('${t.survey.url}', '_blank', 'noopener,noreferrer')"
+                   class="bg-teal-500 hover:bg-teal-400 text-white px-8 py-3 rounded-full font-medium transition-all w-full sm:w-auto shadow-lg hover:shadow-teal-500/50"
+                 >
                    ${t.survey.button}
                  </button>
                </div>
